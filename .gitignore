@@ -1,0 +1,10 @@
+node_modules/
+.next/
+out/
+.env.local
+public/assets/
+public/template.css
+public/icons.css
+public/full-template.css
+generated/
+*.zip

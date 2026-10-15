@@ -1,0 +1,11 @@
+{
+  "routes": 21,
+  "originalHomeBytes": 1126965,
+  "homeTemplateTreeBytes": 56263,
+  "removedLegacyScripts": true,
+  "copiedAssets": 174,
+  "optimizedHomeImageBytesSaved": 44000,
+  "cssBytes": 114432,
+  "exportedHomeBytes": 124110,
+  "homeHtmlReductionPercent": 89
+}

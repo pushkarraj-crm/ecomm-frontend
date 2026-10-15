@@ -1,0 +1,23 @@
+{
+  "name": "unimart-next-storefront",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/ensure-template.mjs",
+    "dev": "next dev --hostname 127.0.0.1 --port 3000",
+    "prepare:template": "node scripts/prepare-template.mjs",
+    "build": "npm run prepare:template && next build --webpack && node scripts/finish-export.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "preview": "node scripts/serve-export.mjs"
+  },
+  "dependencies": {
+    "next": "16.4.1",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "cheerio": "1.1.2",
+    "purgecss": "7.0.2",
+    "sharp": "0.34.5"
+  }
+}
