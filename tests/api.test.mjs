@@ -34,3 +34,36 @@ test('expired sessions, validation errors, and outage responses are actionable',
   globalThis.fetch=async()=>new Response('{}',{status:429});await assert.rejects(request('/products/'),/Too many requests/);
   globalThis.fetch=async()=>new Response('<html>proxy error</html>',{status:502});await assert.rejects(request('/products/'),/unexpected response/);
 });
+
+
+test('effect cleanup cancels an in-flight request without rejecting or leaking a DOM AbortError', async () => {
+  const originalFetch = globalThis.fetch;
+  try {
+    let receivedSignal;
+    globalThis.fetch = (_url, {signal}) => new Promise((_resolve, reject) => {
+      receivedSignal = signal;
+      signal.addEventListener('abort', () => reject(signal.reason), {once:true});
+    });
+    const cleanup = new AbortController();
+    const pending = request('/products/', {public:true, signal:cleanup.signal});
+    cleanup.abort();
+    assert.equal(await pending, undefined);
+    assert.equal(receivedSignal.aborted, true);
+    assert.equal(receivedSignal.reason.name, 'ApiError');
+    let fetched = false;
+    globalThis.fetch = async () => { fetched = true; };
+    assert.equal(await request('/products/', {signal:cleanup.signal}), undefined);
+    assert.equal(fetched, false);
+  } finally { globalThis.fetch = originalFetch; }
+});
+
+test('a request timeout remains an actionable error rather than a silent cancellation', async () => {
+  const originalFetch = globalThis.fetch, originalTimer = globalThis.setTimeout;
+  try {
+    globalThis.setTimeout = callback => originalTimer(callback, 0);
+    globalThis.fetch = (_url, {signal}) => new Promise((_resolve, reject) => {
+      signal.addEventListener('abort', () => reject(signal.reason), {once:true});
+    });
+    await assert.rejects(request('/products/', {public:true}), error => error.name === 'ApiError' && /timed out/.test(error.message));
+  } finally { globalThis.fetch = originalFetch; globalThis.setTimeout = originalTimer; }
+});
