@@ -1,11 +1,15 @@
 import fs from 'node:fs/promises';
+import {existsSync} from 'node:fs';
 import path from 'node:path';
 import {load} from 'cheerio';
 import {PurgeCSS} from 'purgecss';
 import sharp from 'sharp';
 import {fileURLToPath} from 'node:url';
 import {rootPages,informationPages,legacyAliases} from '../lib/site-pages.mjs';
-const project=process.cwd(), source=path.resolve(project,'..'), generated=path.join(project,'generated'), publicDir=path.join(project,'public');
+const project=process.cwd(), generated=path.join(project,'generated'), publicDir=path.join(project,'public');
+const candidates=[process.env.TEMPLATE_SOURCE_DIR,path.resolve(project,'..'),path.resolve(project,'../Ecoomerce-website/Ecoomerce-website')].filter(Boolean);
+const source=candidates.map(p=>path.resolve(p)).find(p=>existsSync(path.join(p,'index.html'))&&existsSync(path.join(p,'Extra Pages/privacy-policy.html')));
+if(!source)throw new Error('Template sources were not found. Set TEMPLATE_SOURCE_DIR before running prepare:template. Existing generated files have been preserved.');
 const scriptProject=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 if(project!==scriptProject)throw new Error('Run template preparation from the next-storefront directory.');
 // These paths contain only rebuildable output. Verify each target before removing it.

@@ -19,7 +19,7 @@ export default function PageContent({page}){
   switch(page.kind){
     case 'home':content=<HomeProducts><TemplateInteractions><Template nodes={page.nodes}/></TemplateInteractions></HomeProducts>;break;
     case 'catalog':content=<Catalog/>;break;
-    case 'product':content=<Product/>;break;
+    case 'product':content=<Product productId={page.productId}/>;break;
     case 'cart':content=<Cart/>;break;
     case 'account':content=<Account/>;break;
     case 'orders':content=<Orders/>;break;

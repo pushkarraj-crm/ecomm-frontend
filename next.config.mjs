@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const config = {
-  output: 'export',
+  outputFileTracingIncludes: { '/*': ['./generated/**/*.json'] },
   trailingSlash: true,
   images: { unoptimized: true },
   poweredByHeader: false,

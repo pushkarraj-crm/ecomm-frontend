@@ -1,12 +1,13 @@
 'use client';
 import Link from 'next/link';
+import { productUrl } from '@/lib/product-url.mjs';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { catalogQuery, itemsOf, lowestPrice, money, productImages } from '@/lib/api.mjs';
 import { useResource, useStore } from './store-provider';
 import { Empty, ErrorState, Loading, Pager } from './ui';
 export function ProductCard({ product }) {
   const { wishlist, toggleWish } = useStore(); const image = productImages(product)[0]; const price = lowestPrice(product), saved = wishlist.includes(String(product.id));
-  const url = '/product-single-default/?product_id=' + encodeURIComponent(product.id);
+  const url = productUrl(product);
   return <article className="rbt-card rbt-product-card has-hover-box-shadow h-100"><div className="inner"><div className="rbt-card-img rbt-bg-color-default next-product-image"><Link href={url}>{image ? <img src={image} alt={product.name} loading="lazy" decoding="async" width="340" height="300" /> : <span className="next-image-placeholder">Image unavailable</span>}</Link><div className="rbt-quick-btn-grp bottom-right--position"><button className={`rbt-quick-btn ${saved ? 'next-saved' : ''}`} aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'} aria-pressed={saved} onClick={() => toggleWish(product.id)}><i className="fa-regular fa-heart" /></button></div></div><div className="rbt-card-body"><h3 className="rbt-card-title h6"><Link href={url}>{product.name}</Link></h3><div className="pricing-part"><span className="price-text">{price == null ? 'Price unavailable' : money(price)}</span></div><p className="next-stock">{(product.variants || []).some(v => Number(v.stock) > 0) ? 'In stock' : 'Out of stock'}</p><div className="prd-btn-grp"><Link className="rbt-btn rbt-btn-border rbt-btn-sm d-block" href={url}>Choose options</Link></div></div></div></article>;
 }
 export default function Catalog({ home = false, title = 'Explore Our Products', limit = 12 }) {

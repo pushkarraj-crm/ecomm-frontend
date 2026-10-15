@@ -1,10 +1,10 @@
 # Unimart Next.js storefront
 
-This project migrates the supplied Unimart HTML template to Next.js 16 with React 19. The original HTML files and assets in the parent folder are retained as the template source. Build-time conversion renders their sections as React elements; the old jQuery/plugin bundles, preloaders and duplicated hidden menus are not shipped on the storefront.
+This project migrates the supplied Unimart HTML template to Next.js 16 with React 19. The original HTML files and assets in the original template folder are retained as the template source. Build-time conversion renders their sections as React elements; the old jQuery/plugin bundles, preloaders and duplicated hidden menus are not shipped on the storefront.
 
 ## Local development
 
-Use Node.js 22.9 or newer. Run these commands inside `next-storefront`:
+Use Node.js 22.9 or newer. Run these commands inside `D:\D2C Marketplace\Frontend`:
 
 ```powershell
 npm ci
@@ -18,21 +18,19 @@ The backend must allow the frontend origin (`http://127.0.0.1:3000`, and `http:/
 
 If npm on Windows is configured to use a failing Git Bash shell, use `npm --script-shell=cmd.exe run dev` (or `build`/`test`).
 
-## Build and shared hosting
+## Build and deploy on Vercel
 
 ```powershell
 npm test
 npm run build
-npm run preview
+npm start
 ```
 
-The build creates `out/index.html` and a folder with `index.html` for each route. Upload **the contents of `out`** to the domain's `public_html`, including `_next`, `assets`, and the hidden `.htaccess` file. Node.js is needed to build locally, but is not needed on the hosting server. Deploy at the domain root. The supplied Apache configuration enables compression, directory indexes, response headers and redirects for the old root `.html` URLs.
+Import this frontend repository into Vercel with the Next.js framework preset, the default `.next` output and `npm run build`. Product paths use `/<product-slug>/dp/<id>/`, for example `/demo-desk-lamp/dp/5/`. The backend slug is preferred; the product ID makes the link unique. Old `product-single-default/?product_id=5` links redirect in the browser after loading the product. New products work at runtime without rebuilding the frontend.
 
-If Python 3 is available, `python scripts/package-export.py` bundles the completed export into `shared-hosting.zip`. The supplied ZIP is configured for the current localhost API; regenerate it after building with your production API URL.
+Set `NEXT_PUBLIC_API_BASE_URL` in Vercel to your public HTTPS backend URL including `/api`, then deploy. Local development keeps `http://127.0.0.1:8000/api`. A deployed site cannot access your computer's localhost backend. Allow the deployed frontend origin in the backend CORS settings.
 
-Before a public deployment, set `NEXT_PUBLIC_API_BASE_URL` to your publicly reachable **HTTPS** backend URL and rebuild. A deployed website cannot use your computer's localhost backend: localhost refers to each visitor's own computer. Add the deployed HTTPS frontend origin to the backend CORS configuration. Replace the entire previous export together so HTML and JavaScript chunks match. Do not upload `node_modules`, `.next`, source files or environment files.
-
-`npm run preview` serves the export on port 3000 for local checks. Stop the dev server first if it already uses that port. The original parent `index.html` belongs to the legacy site; the Next.js homepage is `out/index.html` after building.
+Commit `generated/` and the prepared `public/` assets alongside the code; the Vercel build uses these files and does not require the original HTML folder or a running backend. To regenerate template assets locally, run `npm run prepare:template`. It finds the original source folder next to this project, or accepts `TEMPLATE_SOURCE_DIR`. ZIP packaging is not part of deployment.
 
 ## Connected features
 
@@ -50,9 +48,9 @@ Wishlist is stored in the current browser because the document has no wishlist e
 
 The production site contains 21 useful pages: home, shop, categories, product detail, cart, checkout, order confirmation, customer sign-in/sign-up/password reset, account information, order history, wishlist, seller sign-in/sign-up/dashboard, about, returns, privacy, terms and help.
 
-Demo layouts, component showcases, blogs, portfolios, missing-page samples, duplicate product/shop/checkout layouts and unsupported account pages are excluded. Privacy, terms and help have normal root URLs. Old duplicate storefront URLs redirect to their retained equivalent on Apache. Unsupported/demo URLs return 404.
+Demo layouts, component showcases, blogs, portfolios, missing-page samples, duplicate product/shop/checkout layouts and unsupported account pages are excluded. Privacy, terms and help have normal root URLs. Unsupported/demo URLs return 404.
 
-`lib/site-pages.mjs` is the explicit page allowlist. The build clears its own generated output and recopies only referenced assets so excluded pages and images do not remain in the export. Original HTML files in the parent folder remain as source/backups and are not uploaded. When replacing an existing deployment, remove its old page folders before uploading the new export; overwriting files alone cannot remove old demo pages.
+`lib/site-pages.mjs` is the explicit page allowlist. Local template preparation clears its generated output and recopies only referenced assets. Normal Vercel builds use the prepared assets directly. Original HTML source/backups are not deployed.
 
 ## Design and performance
 
@@ -62,8 +60,12 @@ The build generates a trimmed stylesheet for the storefront and loads the full t
 
 ## Verification and launch status
 
-Automated tests cover API response/error handling, bearer authentication, session roles, input normalization and payment verification/rejection/cancellation. Tests use isolated mocks and never charge a payment. The production export contains 21 routes.
+Automated tests cover API response/error handling, bearer authentication, session roles, input normalization and payment verification/rejection/cancellation. Tests use isolated mocks and never charge a payment. The app includes 21 store routes plus dynamic product URLs.
 
 The running local API at `127.0.0.1:8000` was checked: public products returned the documented paginated shape with zero records, categories returned an empty list, protected cart requests returned 401 without a token, and CORS/preflight allowed the local frontend origin and authorization header. Browser checks verified search, sorting, the empty catalog and the cart sign-in redirect. Live authenticated flows and populated product responses still need integration testing with test accounts and inventory. Before launch, exercise customer registration/login, address/cart changes, seller permissions and a Razorpay **test-mode** payment with your backend, including cancellation, verification failure and out-of-stock responses. Configure Razorpay capture and webhook settings on the backend according to `apis.txt`; keep its secret keys exclusively on the backend.
 
 To update template sections, edit the original HTML in the parent directory and rebuild. To change API-driven UI or interactions, edit `components/` and `lib/`. Generated JSON and copied public assets are regenerated by `scripts/prepare-template.mjs`.
+
+## Product URLs
+
+Product links use the backend's stored slug and stable ID, for example `/demo-desk-lamp/dp/5/`. Legacy `/product-single-default/?product_id=5` links and stale name segments redirect in the browser after loading the product. Sign-in return links use the canonical product path. The public catalog and detail API now expose `slug`. Vercel resolves product paths at runtime, so publishing new products or changing a slug does not require a frontend rebuild.
