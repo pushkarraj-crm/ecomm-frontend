@@ -29,5 +29,6 @@ export function useResource(path, options = {}) {
     request(path, { public: isPublic, signal: controller.signal }).then(result => { if (!controller.signal.aborted) setData(result); }).catch(e => { if (!controller.signal.aborted) setError(e); }).finally(() => { if (!controller.signal.aborted) setLoading(false); });
     return () => controller.abort();
   }, [path, isPublic, enabled, revision]);
-  return { data, error, loading, reload: () => setRevision(n => n + 1) };
+  const reload=useCallback(()=>setRevision(n=>n+1),[]);
+  return { data, error, loading, reload };
 }

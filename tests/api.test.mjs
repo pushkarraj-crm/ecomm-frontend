@@ -13,7 +13,7 @@ test('catalog accepts both response shapes and uses documented search/sort pagin
 test('validated quantities, addresses, media URLs, and return URLs',()=>{
   for(const value of [0,-1,1.5,'oops',4])assert.throws(()=>quantityValue(value,3));assert.equal(quantityValue(2,3),2);
   assert.equal(media('javascript:alert(1)'),'');assert.ok(media('/media/photo.webp').endsWith('/media/photo.webp'));
-  assert.equal(safeNext('//evil.test'),'/account-info/');assert.equal(safeNext('/cart/'),'/cart/');assert.equal(safeNext('/\\evil.test'),'/account-info/');
+  assert.equal(safeNext('//evil.test'),'/');assert.equal(safeNext('/cart/'),'/cart/');assert.equal(safeNext(null),'/');assert.equal(safeNext(''),'/');assert.equal(safeNext('/my-order-history/'),'/my-order-history/');assert.equal(safeNext(null,'/seller-dashboard/'),'/seller-dashboard/');assert.equal(safeNext('/\\evil.test'),'/');
   assert.ok(validAddress({address_line_1:'Road',city:'City',state:'State',postal_code:'123456'}));assert.equal(validAddress({address:'legacy'}),false);
 });
 test('customer and seller sessions are role checked',()=>{

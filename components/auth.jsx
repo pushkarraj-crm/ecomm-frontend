@@ -18,7 +18,7 @@ export default function Auth({ mode = 'login', seller = false }) {
       let session;
       try { session = await request(seller ? '/auth/seller/login/' : '/auth/customer/login/', {method:'POST',public:true,body:{email:data.email,password:data.password}}); }
       catch(e) { if(register) { notify('Your account was created. Please sign in.'); router.push('/signin/'); return; } throw e; }
-      saveSession(session,data.email,seller); router.push(safeNext(query.get('next'),seller ? '/seller-dashboard/' : '/account-info/'));
+      saveSession(session,data.email,seller); router.replace(safeNext(query.get('next'),seller ? '/seller-dashboard/' : '/'));
     } catch(e) { setError(e.message); } finally { setBusy(false); }
   }
   const heading = reset ? tokenReset ? 'Set a New Password' : 'Reset Password' : register ? `Create ${seller ? 'Seller ' : ''}Account` : `${seller ? 'Seller ' : ''}Sign In`;
