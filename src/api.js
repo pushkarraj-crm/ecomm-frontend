@@ -1,4 +1,4 @@
-const base = (import.meta.env?.VITE_API_BASE_URL || '/api').replace(/\/$/, '');
+const base = (import.meta.env?.VITE_API_BASE_URL || (import.meta.env?.PROD ? '' : '/api')).replace(/\/$/, '');
 export class ApiError extends Error { constructor(message, status) { super(message); this.status = status; } }
 export function describeError(value) {
   if (typeof value === 'string') return value;
@@ -10,6 +10,7 @@ export function clearSession() { sessionStorage.removeItem('d2c-session'); windo
 export function session() { try { return JSON.parse(sessionStorage.getItem('d2c-session') || 'null'); } catch { return null; } }
 export function saveSession(data) { sessionStorage.setItem('d2c-session', JSON.stringify(data)); window.dispatchEvent(new Event('session-change')); }
 export async function api(path, { method = 'GET', body, signal, download = false } = {}) {
+  if (!base) throw new ApiError('The hosted backend is not configured yet. Set VITE_API_BASE_URL and redeploy.', 0);
   const token = session()?.access;
   let response;
   try {
