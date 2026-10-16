@@ -1,0 +1,12 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { api, rows, describeError, saveSession, session } from './api.js';
+const values = new Map();
+globalThis.sessionStorage = {getItem: k=>values.get(k), setItem:(k,v)=>values.set(k,v),removeItem:k=>values.delete(k)};
+globalThis.window = {dispatchEvent:()=>{}};
+test('supports documented array and paginated responses',()=>{assert.deepEqual(rows([{id:1}]),[{id:1}]);assert.deepEqual(rows({results:[{id:2}]}),[{id:2}]);assert.deepEqual(rows(null),[]);});
+test('formats nested API validation errors',()=>assert.match(describeError({variants:[{price:['Must be positive.']}]}),/price: Must be positive/));
+test('sends bearer token and JSON stock update',async()=>{saveSession({access:'test-access'});globalThis.fetch=async(url,opts)=>{assert.equal(url,'/api/seller/inventory/1/');assert.equal(opts.method,'PATCH');assert.equal(opts.headers.Authorization,'Bearer test-access');assert.equal(opts.body,'{"stock":4}');return new Response('{"stock":4}');};assert.deepEqual(await api('/seller/inventory/1/',{method:'PATCH',body:{stock:4}}),{stock:4});});
+test('does not override multipart content type',async()=>{globalThis.fetch=async(url,opts)=>{assert.equal(opts.headers['Content-Type'],undefined);assert.ok(opts.body instanceof FormData);return new Response('{}');};await api('/seller/catalog/bulk/',{method:'POST',body:new FormData()});});
+test('expires session on protected 401 and reports server error',async()=>{saveSession({access:'expired'});globalThis.fetch=async()=>new Response('{"detail":"Expired token"}',{status:401});await assert.rejects(api('/seller/profile/'),/Expired token/);assert.equal(session(),null);});
+test('reports network failure without inventing data',async()=>{globalThis.fetch=async()=>{throw new TypeError('offline');};await assert.rejects(api('/seller/dashboard/'),/Cannot reach the API/);});

@@ -1,0 +1,513 @@
+<!doctype html>
+<html lang="en" data-layout="vertical" data-topbar="light" data-sidebar="dark" data-sidebar-size="lg" data-sidebar-image="none" data-preloader="disable">
+
+
+
+<head>
+
+    <meta charset="utf-8">
+    <title>Order Details | Velzon - Admin &amp; Dashboard Template</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta content="Premium Multipurpose Admin &amp; Dashboard Template" name="description">
+    <meta content="Themesbrand" name="author">
+    
+    <link rel="shortcut icon" href="assets/images/favicon.ico">
+
+    
+    <script src="assets/js/layout.js"></script>
+    
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    
+    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css">
+    
+    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css">
+    
+    <link href="assets/css/custom.min.css" rel="stylesheet" type="text/css">
+
+</head>
+
+<body>
+
+    
+    <div id="layout-wrapper">
+
+        <header id="page-topbar">
+    <div class="layout-width">
+        <div class="navbar-header">
+            <div class="d-flex">
+                <!-- LOGO -->
+                <div class="navbar-brand-box horizontal-logo">
+                    <a href="index.html" class="logo logo-dark">
+                        <span class="logo-sm">
+                            <img src="assets/images/logo-sm.png" alt height="22">
+                        </span>
+                        <span class="logo-lg">
+                            <img src="assets/images/logo-dark.png" alt height="17">
+                        </span>
+                    </a>
+
+                    <a href="index.html" class="logo logo-light">
+                        <span class="logo-sm">
+                            <img src="assets/images/logo-sm.png" alt height="22">
+                        </span>
+                        <span class="logo-lg">
+                            <img src="assets/images/logo-light.png" alt height="17">
+                        </span>
+                    </a>
+                </div>
+
+                <button type="button" class="btn btn-sm px-3 fs-16 header-item vertical-menu-btn topnav-hamburger" id="topnav-hamburger-icon">
+                    <span class="hamburger-icon">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </span>
+                </button>
+
+                <!-- App Search-->
+                
+            </div>
+
+            <div class="d-flex align-items-center">
+
+                
+
+               
+
+                
+
+
+                
+
+                <div class="dropdown ms-sm-3 header-item topbar-user">
+                    <button type="button" class="btn" id="page-header-user-dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="d-flex align-items-center">
+                            <img class="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg" alt="Header Avatar">
+                            <span class="text-start ms-xl-2">
+                                <span class="d-none d-xl-inline-block ms-1 fw-medium user-name-text">PR Enterprises</span>
+                                <span class="d-none d-xl-block ms-1 fs-12 user-name-sub-text">Founder</span>
+                            </span>
+                        </span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-end">
+                        <!-- item-->
+                        <h6 class="dropdown-header">Welcome PR Enterprises</h6>
+                        <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
+                        
+                        <!-- <div class="dropdown-divider"></div> -->
+                        <a class="dropdown-item" href="auth-logout-basic.html"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+<div id="removeNotificationModal" class="modal fade zoomIn" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="NotificationModalbtn-close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-2 text-center">
+                    <lord-icon src="https://cdn.lordicon.com/gsqxdxog.json" trigger="loop" colors="primary:#f7b84b,secondary:#f06548" style="width:100px;height:100px"></lord-icon>
+                    <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
+                        <h4>Are you sure ?</h4>
+                        <p class="text-muted mx-4 mb-0">Are you sure you want to remove this Notification ?</p>
+                    </div>
+                </div>
+                <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
+                    <button type="button" class="btn w-sm btn-light" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn w-sm btn-danger" id="delete-notification">Yes, Delete It!</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+        
+        <div class="app-menu navbar-menu">
+            <!-- LOGO -->
+            <div class="navbar-brand-box">
+                <!-- Dark Logo-->
+                <a href="index.html" class="logo logo-dark">
+                    <span class="logo-sm">
+                        <img src="assets/images/logo-sm.png" alt height="22">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="assets/images/logo-dark.png" alt height="17">
+                    </span>
+                </a>
+                <!-- Light Logo-->
+                <a href="index.html" class="logo logo-light">
+                    <span class="logo-sm">
+                        <img src="assets/images/logo-sm.png" alt height="22">
+                    </span>
+                    <span class="logo-lg">
+                        <img src="assets/images/logo-light.png" alt height="17">
+                    </span>
+                </a>
+                <button type="button" class="btn btn-sm p-0 fs-20 header-item float-end btn-vertical-sm-hover" id="vertical-hover">
+                    <i class="ri-record-circle-line"></i>
+                </button>
+            </div>
+
+            <div id="scrollbar">
+                <div class="container-fluid">
+
+                    <div id="two-column-menu">
+                    </div>
+                    <ul class="navbar-nav" id="navbar-nav"><li class="menu-title"><span>Menu</span></li><li class="nav-item"><a class="nav-link menu-link" href="index.html"><i class="ri-dashboard-2-line"></i><span>Dashboards</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="orders.html"><i class="ri-apps-2-line"></i><span>Orders</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="apps-ecommerce-products.html"><i class="ri-stack-line"></i><span>Inventory</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="apps-ecommerce-add-product.html"><i class="ri-folder-upload-line"></i><span>Catalog Uploads</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="#bulk"><i class="ri-file-excel-2-line"></i><span>Bulk Catalog</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="#earnings"><i class="ri-wallet-line"></i><span>Payment</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="#profile"><i class="ri-store-2-line"></i><span>Store Profile</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="#bank"><i class="ri-bank-line"></i><span>Bank &amp; KYC</span></a></li><li class="nav-item"><a class="nav-link menu-link" href="#logout"><i class="ri-logout-box-r-line"></i><span>Log Out</span></a></li></ul>
+                            </div>
+                        
+
+
+                    
+
+                    
+                </div>
+                <!-- Sidebar -->
+            </div>
+        
+        
+        <div class="vertical-overlay"></div>
+
+        
+        
+        
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="page-title-box d-sm-flex align-items-center justify-content-between">
+                                <h4 class="mb-sm-0">Order Details</h4>
+
+                                <div class="page-title-right">
+                                    <ol class="breadcrumb m-0">
+                                        <li class="breadcrumb-item"><a href="javascript: void(0);">Ecommerce</a></li>
+                                        <li class="breadcrumb-item active">Order Details</li>
+                                    </ol>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                    <div class="row">
+                        <div class="col-xl-9">
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex align-items-center">
+                                        <h5 class="card-title flex-grow-1 mb-0">Order #VL2667</h5>
+                                        <div class="flex-shrink-0">
+                                            <a href="apps-invoices-details.html" class="btn btn-success btn-sm"><i class="ri-download-2-fill align-middle me-1"></i> Invoice</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive table-card">
+                                        <table class="table table-nowrap align-middle table-borderless mb-0">
+                                            <thead class="table-light text-muted">
+                                                <tr>
+                                                    <th scope="col">Product Details</th>
+                                                    <th scope="col">Item Price</th>
+                                                    <th scope="col">Quantity</th>
+                                                    
+                                                    <th scope="col" class="text-end">Total Amount</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-md bg-light rounded p-1">
+                                                                <img src="assets/images/products/img-8.png" alt class="img-fluid d-block">
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary">Sweatshirt for Men (Pink)</a></h5>
+                                                                <p class="text-muted mb-0">Color: <span class="fw-medium">Pink</span></p>
+                                                                <p class="text-muted mb-0">Size: <span class="fw-medium">M</span></p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>$119.99</td>
+                                                    <td>02</td>
+                                                    <td>
+                                                        <div class="text-warning fs-15">
+                                                            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="fw-medium text-end">
+                                                        $239.98
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-md bg-light rounded p-1">
+                                                                <img src="assets/images/products/img-7.png" alt class="img-fluid d-block">
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary">Noise NoiseFit Endure Smart Watch</a></h5>
+                                                                <p class="text-muted mb-0">Color: <span class="fw-medium">Black</span></p>
+                                                                <p class="text-muted mb-0">Size: <span class="fw-medium">32.5mm</span></p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>$94.99</td>
+                                                    <td>01</td>
+                                                    <td>
+                                                        <div class="text-warning fs-15">
+                                                            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="fw-medium text-end">
+                                                        $94.99
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="d-flex">
+                                                            <div class="flex-shrink-0 avatar-md bg-light rounded p-1">
+                                                                <img src="assets/images/products/img-3.png" alt class="img-fluid d-block">
+                                                            </div>
+                                                            <div class="flex-grow-1 ms-3">
+                                                                <h5 class="fs-15"><a href="apps-ecommerce-product-details.html" class="link-primary">350 ml Glass Grocery Container</a></h5>
+                                                                <p class="text-muted mb-0">Color: <span class="fw-medium">White</span></p>
+                                                                <p class="text-muted mb-0">Size: <span class="fw-medium">350 ml</span></p>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>$24.99</td>
+                                                    <td>01</td>
+                                                    <td>
+                                                        <div class="text-warning fs-15">
+                                                            <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-half-fill"></i><i class="ri-star-line"></i><i class="ri-star-line"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="fw-medium text-end">
+                                                        $24.99
+                                                    </td>
+                                                </tr>
+                                                <tr class="border-top border-top-dashed">
+                                                    <td colspan="3"></td>
+                                                    <td colspan="2" class="fw-medium p-0">
+                                                        <table class="table table-borderless mb-0">
+                                                            <tbody>
+                                                                <tr>
+                                                                    <td>Sub Total :</td>
+                                                                    <td class="text-end">$359.96</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Discount <span class="text-muted">(VELZON15)</span> : :</td>
+                                                                    <td class="text-end">-$53.99</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Shipping Charge :</td>
+                                                                    <td class="text-end">$65.00</td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td>Estimated Tax :</td>
+                                                                    <td class="text-end">$44.99</td>
+                                                                </tr>
+                                                                <tr class="border-top border-top-dashed">
+                                                                    <th scope="row">Total (USD) :</th>
+                                                                    <th class="text-end">$415.96</th>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card"><div class="card-header"><h5 class="card-title mb-0">Order Status</h5></div><div class="card-body"></div></div>
+                            
+                        </div>
+                        
+                        <div class="col-xl-3">
+                            
+                            
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <div class="d-flex">
+                                        <h5 class="card-title flex-grow-1 mb-0">Customer Details</h5>
+                                        <div class="flex-shrink-0">
+                                            <a href="javascript:void(0);" class="link-secondary">View Profile</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled mb-0 vstack gap-3">
+                                        <li>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0">
+                                                    <img src="assets/images/users/avatar-3.jpg" alt class="avatar-sm rounded">
+                                                </div>
+                                                <div class="flex-grow-1 ms-3">
+                                                    <h6 class="fs-14 mb-1">Joseph Parkers</h6>
+                                                    <p class="text-muted mb-0">Customer</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                        <li><i class="ri-mail-line me-2 align-middle text-muted fs-16"></i>josephparker@gmail.com</li>
+                                        <li><i class="ri-phone-line me-2 align-middle text-muted fs-16"></i>+(256) 245451 441</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i> Billing Address</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
+                                        <li class="fw-medium fs-14">Joseph Parker</li>
+                                        <li>+(256) 245451 451</li>
+                                        <li>2186 Joyce Street Rocky Mount</li>
+                                        <li>New York - 25645</li>
+                                        <li>United States</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"><i class="ri-map-pin-line align-middle me-1 text-muted"></i> Shipping Address</h5>
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-unstyled vstack gap-2 fs-13 mb-0">
+                                        <li class="fw-medium fs-14">Joseph Parker</li>
+                                        <li>+(256) 245451 451</li>
+                                        <li>2186 Joyce Street Rocky Mount</li>
+                                        <li>California - 24567</li>
+                                        <li>United States</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="card-title mb-0"><i class="ri-secure-payment-line align-bottom me-1 text-muted"></i> Payment Details</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Transactions:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">#VLZ124561278124</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Payment Method:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">Debit Card</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Card Holder Name:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">Joseph Parker</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Card Number:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">xxxx xxxx xxxx 2456</h6>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <div class="flex-shrink-0">
+                                            <p class="text-muted mb-0">Total Amount:</p>
+                                        </div>
+                                        <div class="flex-grow-1 ms-2">
+                                            <h6 class="mb-0">$415.96</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        
+                    </div>
+                    
+
+                </div>
+            </div>
+
+            <footer class="footer">
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <script>document.write(new Date().getFullYear())</script> &#xa9; Velzon.
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="text-sm-end d-none d-sm-block">
+                                Design &amp; Develop by Themesbrand
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+        
+
+    </div>
+    
+
+
+
+    
+    <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+        <i class="ri-arrow-up-line"></i>
+    </button>
+    
+
+    
+    <div id="preloader">
+        <div id="status">
+            <div class="spinner-border text-primary avatar-sm" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+        </div>
+    </div>
+
+    
+
+    
+    
+
+    
+    <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="assets/libs/simplebar/simplebar.min.js"></script>
+    <script src="assets/libs/node-waves/waves.min.js"></script>
+    <script src="assets/libs/feather-icons/feather.min.js"></script>
+    <script src="assets/js/pages/plugins/lord-icon-2.1.0.js"></script>
+    <script src="assets/js/plugins.js"></script>
+
+    
+    <script src="assets/js/app.js"></script>
+</body>
+
+
+
+</html>
