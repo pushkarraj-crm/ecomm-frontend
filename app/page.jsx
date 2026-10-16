@@ -1,3 +1,3 @@
-import PageContent from '@/components/page-content';
-import {getTemplate} from '@/lib/templates.mjs';
-export default async function Home(){return <PageContent page={await getTemplate('')}/>;}
+import {Suspense} from 'react';
+import MarketHome from '@/components/market-home';
+export default function Home(){return <Suspense fallback={<div className="next-state">Loading your marketplace…</div>}><MarketHome/></Suspense>;}
