@@ -4,9 +4,9 @@ import { useState } from 'react';
 import { money, quantityValue, request } from '@/lib/api.mjs';
 import { useResource, useStore } from './store-provider';
 import { AuthGate, Button, Empty, ErrorState, Loading } from './ui';
-export function OrderSummary({ items, checkout = false }) {
+export function OrderSummary({ items, checkout = false, quote = null }) {
   const total = items.reduce((n,i) => n + Number(i.price) * Number(i.quantity),0), count = items.reduce((n,i) => n + Number(i.quantity),0);
-  return <aside className="rbt-sidebar-widget rbt-sidebar-cart next-panel"><div className="rbt-inner"><h3 className="h5">Order Summary</h3><div className="rbt-cart-subttotal"><p>Items ({count})</p><p className="price">{money(total)}</p></div><div className="rbt-cart-subttotal"><p>Subtotal</p><p className="price">{money(total)}</p></div><p className="description-text">Final amount is confirmed at payment.</p>{checkout ? <Link className="rbt-btn w-100 text-center" href="/checkout-delivery-step-one/">Proceed to Checkout</Link> : <Link href="/cart/">Edit cart</Link>}</div></aside>;
+  return <aside className="rbt-sidebar-widget rbt-sidebar-cart next-panel"><div className="rbt-inner"><h3 className="h5">Order Summary</h3><div className="rbt-cart-subttotal"><p>Items ({count})</p><p className="price">{money(total)}</p></div><div className="rbt-cart-subttotal"><p>Subtotal</p><p className="price">{money(total)}</p></div><div className="rbt-cart-subttotal"><p>Total{quote?.coupon_code?` (${quote.coupon_code})`:""}</p><strong className="price">{money(quote?.total??total)}</strong></div>{quote?.discount>0&&<p className="market-discount">You save {money(quote.discount)}</p>}<p className="description-text">Final amount is confirmed at payment.</p>{checkout ? <Link className="rbt-btn w-100 text-center" href="/checkout-delivery-step-one/">Proceed to Checkout</Link> : <Link href="/cart/">Edit cart</Link>}</div></aside>;
 }
 function CartContent() {
   const resource = useResource('/cart/'), {refreshCart,notify} = useStore(); const [busy,setBusy]=useState(false);

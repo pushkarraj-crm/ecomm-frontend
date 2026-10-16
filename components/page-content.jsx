@@ -13,8 +13,10 @@ const Checkout=dynamic(()=>import('./checkout'));
 const ThankYou=dynamic(()=>import('./checkout').then(m=>m.ThankYou));
 const Auth=dynamic(()=>import('./auth'));
 const Seller=dynamic(()=>import('./seller'));
+const HelpCentre=dynamic(()=>import('./help-centre'));
 const Categories=dynamic(()=>import('./catalog').then(m=>m.Categories));
 export default function PageContent({page}){
+  if(page.slug==='help-center')return <Suspense fallback={<div className="next-state">Loading help…</div>}><HelpCentre/></Suspense>;
   let content;
   switch(page.kind){
     case 'home':content=<HomeProducts><TemplateInteractions><Template nodes={page.nodes}/></TemplateInteractions></HomeProducts>;break;
