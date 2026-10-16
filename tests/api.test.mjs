@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {request,keys,saveSession,readSession,clearSession,itemsOf,catalogQuery,lowestPrice,media,quantityValue,safeNext,validAddress} from '../lib/api.mjs';
+import {request,keys,saveCustomerIdentity,saveSession,readSession,clearSession,itemsOf,catalogQuery,lowestPrice,media,quantityValue,safeNext,validAddress} from '../lib/api.mjs';
 const storage=new Map();
 globalThis.window={dispatchEvent(){}};
 globalThis.localStorage={getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,String(value)),removeItem:key=>storage.delete(key)};
@@ -66,4 +66,16 @@ test('a request timeout remains an actionable error rather than a silent cancell
     });
     await assert.rejects(request('/products/', {public:true}), error => error.name === 'ApiError' && /timed out/.test(error.message));
   } finally { globalThis.fetch = originalFetch; globalThis.setTimeout = originalTimer; }
+});
+
+test('customer identity is persisted at login, refreshed from profile and cleared on logout',()=>{
+  clearSession();saveSession({access:'a',refresh:'r',is_seller:false,name:'Customer Name',mobile_number:'9876543210'},'identity@example.test');
+  assert.equal(readSession().name,'Customer Name');
+  saveCustomerIdentity({name:'Updated Name',mobile_number:'9999999999'},'identity@example.test');
+  assert.equal(readSession().name,'Updated Name');
+  saveCustomerIdentity({name:'Another customer'},'different@example.test');
+  assert.equal(readSession().name,'Updated Name');
+  saveSession({access:'b',refresh:'s',is_seller:false},'new@example.test');
+  assert.equal(readSession().name,'');
+  clearSession();assert.equal(localStorage.getItem(keys.name),null);
 });
