@@ -1,0 +1,15 @@
+node_modules/
+.next/
+out/
+dist/
+public/
+generated/
+src/generated/
+src/templates/
+.local/
+.vercel/
+package-lock.json
+migration-report.json
+**/*.md
+**/*.txt
+.env*

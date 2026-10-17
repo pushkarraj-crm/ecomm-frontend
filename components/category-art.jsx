@@ -1,3 +1,34 @@
-import {categoryIllustration} from '@/lib/categories.mjs';
-const artwork={shirt:'M29 25 15 33l8 15 9-5v32h36V43l9 5 8-15-14-8-10-4c-3 11-15 11-18 0Z',beauty:'M34 42h32v36H34Z M39 31h22v11H39Z M42 22h16v9H42Z M42 54h16 M42 63h12',toys:'M25 39h50v40H25Z M19 30h62v14H19Z M50 31v48 M50 30c-26 1-22-23-9-16 6 3 9 16 9 16Zm0 0c26 1 22-23 9-16-6 3-9 16-9 16Z',home:'m19 44 31-25 31 25 M26 40v39h48V40 M41 79V56h18v23 M34 43h7 M59 43h7',diwali:'M20 54h60c-3 32-57 32-60 0Z M50 51c-21-14 0-23 0-35 15 17 17 25 0 35Z M22 39l-7-5 M78 39l7-5',books:'M25 24h15v55H25Z M41 31h14v48H41Z m20-8 12-3 14 54-12 3Z M29 35h7 M45 42h6 M65 33l6-2',bag:'M25 36h50l6 44H19Z M38 36V26c0-17 24-17 24 0v10 M38 48v4 M62 48v4',shoe:'M21 51c13 5 19-4 19-18l12 5 9 12 18 10v17H20c-9 0-9-19 1-26Z M19 68h59 M48 47l-5 5 M56 52l-5 5',pet:'M27 64c12-24 33-24 46 0 14 23-12 20-23 13-11 7-37 10-23-13Z M31 42c-14 4-21-17-12-19 10-3 19 16 12 19Z M44 34c-13 0-17-24-6-24 9 0 14 24 6 24Z M56 34c13 0 17-24 6-24-9 0-14 24-6 24Z M69 42c14 4 21-17 12-19-10-3-19 16-12 19Z',sports:'M79 50a29 29 0 1 1-58 0 29 29 0 0 1 58 0Z m-29-13 13 9-5 15H42l-5-15Z M50 21v16 M79 43l-16 3 M68 74 58 61 M32 74l10-13 M21 43l16 3',accessories:'M31 26h38v50H31Z M38 26v-9h24v9 M38 76v9h24v-9 M50 36v17l10 7 M50 29v2'};
-export default function CategoryArt({name}){return <svg viewBox="0 0 100 100" width="112" height="112" fill="none" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="currentColor" opacity=".08"/><circle cx="80" cy="20" r="7" fill="currentColor" opacity=".15"/><path d={artwork[categoryIllustration(name)]} fill="currentColor" fillOpacity=".12" stroke="currentColor" strokeWidth="2.7" strokeLinecap="round" strokeLinejoin="round"/></svg>;}
+import { categoryIllustration } from '@/lib/categories.mjs';
+const artwork = {
+  shirt: 'M29 25 15 33l8 15 9-5v32h36V43l9 5 8-15-14-8-10-4c-3 11-15 11-18 0Z',
+  beauty: 'M34 42h32v36H34Z M39 31h22v11H39Z M42 22h16v9H42Z M42 54h16 M42 63h12',
+  toys: 'M25 39h50v40H25Z M19 30h62v14H19Z M50 31v48 M50 30c-26 1-22-23-9-16 6 3 9 16 9 16Zm0 0c26 1 22-23 9-16-6 3-9 16-9 16Z',
+  home: 'm19 44 31-25 31 25 M26 40v39h48V40 M41 79V56h18v23 M34 43h7 M59 43h7',
+  diwali:
+    'M20 54h60c-3 32-57 32-60 0Z M50 51c-21-14 0-23 0-35 15 17 17 25 0 35Z M22 39l-7-5 M78 39l7-5',
+  books:
+    'M25 24h15v55H25Z M41 31h14v48H41Z m20-8 12-3 14 54-12 3Z M29 35h7 M45 42h6 M65 33l6-2',
+  bag: 'M25 36h50l6 44H19Z M38 36V26c0-17 24-17 24 0v10 M38 48v4 M62 48v4',
+  shoe: 'M21 51c13 5 19-4 19-18l12 5 9 12 18 10v17H20c-9 0-9-19 1-26Z M19 68h59 M48 47l-5 5 M56 52l-5 5',
+  pet: 'M27 64c12-24 33-24 46 0 14 23-12 20-23 13-11 7-37 10-23-13Z M31 42c-14 4-21-17-12-19 10-3 19 16 12 19Z M44 34c-13 0-17-24-6-24 9 0 14 24 6 24Z M56 34c13 0 17-24 6-24-9 0-14 24-6 24Z M69 42c14 4 21-17 12-19-10-3-19 16-12 19Z',
+  sports:
+    'M79 50a29 29 0 1 1-58 0 29 29 0 0 1 58 0Z m-29-13 13 9-5 15H42l-5-15Z M50 21v16 M79 43l-16 3 M68 74 58 61 M32 74l10-13 M21 43l16 3',
+  accessories: 'M31 26h38v50H31Z M38 26v-9h24v9 M38 76v9h24v-9 M50 36v17l10 7 M50 29v2',
+};
+export default function CategoryArt({ name }) {
+  return (
+    <svg viewBox="0 0 100 100" width="112" height="112" fill="none" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" fill="currentColor" opacity=".08" />
+      <circle cx="80" cy="20" r="7" fill="currentColor" opacity=".15" />
+      <path
+        d={artwork[categoryIllustration(name)]}
+        fill="currentColor"
+        fillOpacity=".12"
+        stroke="currentColor"
+        strokeWidth="2.7"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}

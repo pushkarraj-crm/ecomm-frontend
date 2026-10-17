@@ -1,17 +1,428 @@
 'use client';
-import {useState} from 'react';
-import {addressText,download,itemsOf,money,request} from '@/lib/api.mjs';
-import {useResource,useStore} from './store-provider';
-import {AccountNav,AuthGate,Button,ErrorState,Field,Loading,Pager} from './ui';
-function SellerContent(){
-  const[tab,setTab]=useState('dashboard'),[page,setPage]=useState(1),[busy,setBusy]=useState(false),[category,setCategory]=useState('');const{notify}=useStore();
-  const paths={dashboard:'/seller/dashboard/',orders:`/seller/orders/?page=${page}`,inventory:`/seller/inventory/?page=${page}`,earnings:'/seller/earnings/',payouts:`/seller/payout/?page=${page}`,analytics:'/seller/analytics/?period=last_7_days'};
-  const resource=useResource(paths[tab]||null);const categories=useResource(tab==='catalog'?'/products/categories/':null,{public:true});
-  async function action(fn){if(busy)return;setBusy(true);try{await fn();notify('Saved successfully.');resource.reload();}catch(e){notify(e.message,true);}finally{setBusy(false);}}
-  function flatten(rows){return rows.flatMap(c=>[c,...flatten(c.children||c.subcategories||[])]);}
-  async function submitProduct(e){e.preventDefault();const form=e.currentTarget,d=new FormData(form);action(async()=>{const upload=new FormData();for(const key of ['name','description'])upload.set(key,d.get(key));upload.set('category',category);upload.set('variants',JSON.stringify([{size:d.get('size'),color:d.get('color'),price:Number(d.get('price')),stock:Number(d.get('stock'))}]));for(const file of d.getAll('images'))if(file.size)upload.append('variant_0_images',file);await request('/seller/catalog/single/',{method:'POST',body:upload});form.reset();});}
-  function submitBank(e){e.preventDefault();const form=e.currentTarget;action(async()=>{await request('/seller/bank/',{method:'POST',body:Object.fromEntries(new FormData(form))});form.reset();});}
-  const data=resource.data||{},rows=itemsOf(data);
-  return <section className="rbt-section-gap2"><div className="container"><h1 className="h3">Seller Dashboard</h1><AccountNav/><div className="next-account-nav">{['dashboard','orders','inventory','catalog','earnings','payouts','analytics','verification'].map(name=><button aria-pressed={tab===name} key={name} onClick={()=>{setTab(name);setPage(1);}}>{name.charAt(0).toUpperCase()+name.slice(1)}</button>)}</div>{paths[tab]&&(resource.loading?<Loading/>:resource.error?<ErrorState error={resource.error} retry={resource.reload}/>:<>{['dashboard','earnings','analytics'].includes(tab)&&<div className="row">{Object.entries(data).filter(([,v])=>typeof v==='number'||(typeof v==='string'&&v.trim()!==''&&!Number.isNaN(Number(v)))).map(([key,value])=><div className="col-md-4 mt--16" key={key}><div className="next-panel"><h2 className="h6">{key.replaceAll('_',' ')}</h2><strong className="h4">{/earn|sale|amount|balance|payout|refund/.test(key)&&!key.includes('count')?money(value):value}</strong></div></div>)}</div>}{tab==='orders'&&rows.map(order=><article className="next-panel mb--16" key={order.id}><h2 className="h5">Order #{order.id}</h2><p>{order.customer_name||order.name} · {money(order.total_amount)} · {order.order_status||''}</p><p>{typeof (order.shipping_address||order.address)==='object'?addressText(order.shipping_address||order.address):(order.shipping_address||order.address||'')}</p>{(order.items||[]).map((i,n)=><p key={i.id||n}>{typeof i.product==='object'?i.product.name:i.product||i.product_name} × {i.quantity}</p>)}<form onSubmit={e=>{e.preventDefault();const status=new FormData(e.currentTarget).get('status');action(()=>request(`/seller/orders/update/${order.id}/`,{method:'PATCH',body:{status}}));}}><select name="status" className="rbt-input-field" defaultValue={order.status}>{['pending','shipped','delivered'].map(s=><option key={s}>{s}</option>)}</select><Button small type="submit" disabled={busy}>Update status</Button> <Button small secondary type="button" onClick={()=>download(`/seller/orders/${order.id}/invoice/`,`invoice-${order.id}.pdf`).catch(e=>notify(e.message,true))}>Download invoice</Button></form></article>)}{tab==='inventory'&&rows.map(v=><form className="next-panel mb--16" key={v.id} onSubmit={e=>{e.preventDefault();const stock=Number(new FormData(e.currentTarget).get('stock'));action(()=>request(`/seller/inventory/${v.id}/`,{method:'PATCH',body:{stock}}));}}><h2 className="h6">{v.product_name||v.name||'Variant'} {v.size} {v.color}</h2><Field label="Stock" name="stock" type="number" min="0" step="1" defaultValue={v.stock}/><Button small type="submit" disabled={busy}>Save stock</Button></form>)}{tab==='payouts'&&<><form className="next-panel" onSubmit={e=>{e.preventDefault();const amount=Number(new FormData(e.currentTarget).get('amount'));action(()=>request('/seller/payout/',{method:'POST',body:{amount}}));}}><Field label="Payout amount (INR)" name="amount" type="number" min="0.01" step="0.01"/><p>Payouts require verified KYC and bank details, and are processed manually.</p><Button disabled={busy} type="submit">Request payout</Button></form>{rows.map(p=><p className="next-panel" key={p.id}>{money(p.amount)} — {p.status}</p>)}</>}{['orders','inventory','payouts'].includes(tab)&&<>{!rows.length&&<p>No records yet.</p>}<Pager page={page} previous={data.previous} next={data.next} change={setPage}/></>}</>)}{tab==='catalog'&&<div className="row"><div className="col-lg-7"><form className="next-panel" onSubmit={submitProduct}><h2 className="h5">Create product</h2><Field name="name" label="Product name"/><Field name="description" label="Description"><textarea className="rbt-text-field" name="description" id="description" required/></Field><Field name="category" label="Category"><select className="rbt-input-field" id="category" required value={category} onChange={e=>setCategory(e.target.value)}><option value="">Choose category</option>{flatten(itemsOf(categories.data)).map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>{categories.error&&<ErrorState error={categories.error} retry={categories.reload}/>}<Field name="size" label="Size"/><Field name="color" label="Colour"/><Field name="price" label="Price (INR)" type="number" min="0.01" step="0.01"/><Field name="stock" label="Stock" type="number" min="0" step="1"/><Field name="images" label="Variant images" type="file" multiple accept="image/*" required={false}/><Button disabled={busy||!category} type="submit">Submit for approval</Button></form></div><div className="col-lg-5"><form className="next-panel" onSubmit={e=>{e.preventDefault();const form=e.currentTarget;action(()=>request('/seller/catalog/bulk/',{method:'POST',body:new FormData(form)}));}}><h2 className="h5">Bulk catalog upload</h2><Button type="button" secondary small onClick={()=>download('/seller/catalog/bulk/template/','catalog-template.xlsx').catch(e=>notify(e.message,true))}>Download template</Button><Field label="Excel workbook (up to 10 MB)" name="file" type="file" accept=".xlsx"/><Button disabled={busy} type="submit">Upload workbook</Button></form></div></div>}{tab==='verification'&&<div className="row"><div className="col-lg-6"><form className="next-panel" onSubmit={e=>{e.preventDefault();const form=e.currentTarget;action(()=>request('/seller/kyc/',{method:'POST',body:new FormData(form)}));}}><h2 className="h5">KYC verification</h2><Field name="pan" label="PAN"/><Field name="aadhaar" label="Aadhaar"/><Field name="document" label="Verification document" type="file"/><Button disabled={busy} type="submit">Submit KYC</Button></form></div><div className="col-lg-6"><form className="next-panel" onSubmit={submitBank}><h2 className="h5">Bank details</h2><Field name="name" label="Account holder name"/><Field name="account" label="Account number"/><Field name="ifsc" label="IFSC"/><Button disabled={busy} type="submit">Save bank details</Button></form></div></div>}</div></section>;
+import { useState } from 'react';
+import { addressText, download, itemsOf, money, request } from '@/lib/api.mjs';
+import { useResource, useStore } from './store-provider';
+import { AccountNav, AuthGate, Button, ErrorState, Field, Loading, Pager } from './ui';
+function SellerContent() {
+  const [tab, setTab] = useState('dashboard'),
+    [page, setPage] = useState(1),
+    [busy, setBusy] = useState(false),
+    [category, setCategory] = useState('');
+  const { notify } = useStore();
+  const paths = {
+    dashboard: '/seller/dashboard/',
+    orders: `/seller/orders/?page=${page}`,
+    inventory: `/seller/inventory/?page=${page}`,
+    earnings: '/seller/earnings/',
+    payouts: `/seller/payout/?page=${page}`,
+    analytics: '/seller/analytics/?period=last_7_days',
+  };
+  const resource = useResource(paths[tab] || null);
+  const categories = useResource(tab === 'catalog' ? '/products/categories/' : null, {
+    public: true,
+  });
+  async function action(fn) {
+    if (busy) return;
+    setBusy(true);
+    try {
+      await fn();
+      notify('Saved successfully.');
+      resource.reload();
+    } catch (e) {
+      notify(e.message, true);
+    } finally {
+      setBusy(false);
+    }
+  }
+  function flatten(rows) {
+    return rows.flatMap((c) => [c, ...flatten(c.children || c.subcategories || [])]);
+  }
+  async function submitProduct(e) {
+    e.preventDefault();
+    const form = e.currentTarget,
+      d = new FormData(form);
+    action(async () => {
+      const upload = new FormData();
+      for (const key of ['name', 'description']) upload.set(key, d.get(key));
+      upload.set('category', category);
+      upload.set(
+        'variants',
+        JSON.stringify([
+          {
+            size: d.get('size'),
+            color: d.get('color'),
+            price: Number(d.get('price')),
+            stock: Number(d.get('stock')),
+          },
+        ]),
+      );
+      for (const file of d.getAll('images'))
+        if (file.size) upload.append('variant_0_images', file);
+      await request('/seller/catalog/single/', { method: 'POST', body: upload });
+      form.reset();
+    });
+  }
+  function submitBank(e) {
+    e.preventDefault();
+    const form = e.currentTarget;
+    action(async () => {
+      await request('/seller/bank/', {
+        method: 'POST',
+        body: Object.fromEntries(new FormData(form)),
+      });
+      form.reset();
+    });
+  }
+  const data = resource.data || {},
+    rows = itemsOf(data);
+  return (
+    <section className="rbt-section-gap2">
+      <div className="container">
+        <h1 className="h3">Seller Dashboard</h1>
+        <AccountNav />
+        <div className="next-account-nav">
+          {[
+            'dashboard',
+            'orders',
+            'inventory',
+            'catalog',
+            'earnings',
+            'payouts',
+            'analytics',
+            'verification',
+          ].map((name) => (
+            <button
+              aria-pressed={tab === name}
+              key={name}
+              onClick={() => {
+                setTab(name);
+                setPage(1);
+              }}
+            >
+              {name.charAt(0).toUpperCase() + name.slice(1)}
+            </button>
+          ))}
+        </div>
+        {paths[tab] &&
+          (resource.loading ? (
+            <Loading />
+          ) : resource.error ? (
+            <ErrorState error={resource.error} retry={resource.reload} />
+          ) : (
+            <>
+              {['dashboard', 'earnings', 'analytics'].includes(tab) && (
+                <div className="row">
+                  {Object.entries(data)
+                    .filter(
+                      ([, v]) =>
+                        typeof v === 'number' ||
+                        (typeof v === 'string' &&
+                          v.trim() !== '' &&
+                          !Number.isNaN(Number(v))),
+                    )
+                    .map(([key, value]) => (
+                      <div className="col-md-4 mt--16" key={key}>
+                        <div className="next-panel">
+                          <h2 className="h6">{key.replaceAll('_', ' ')}</h2>
+                          <strong className="h4">
+                            {/earn|sale|amount|balance|payout|refund/.test(key) &&
+                            !key.includes('count')
+                              ? money(value)
+                              : value}
+                          </strong>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
+              {tab === 'orders' &&
+                rows.map((order) => (
+                  <article className="next-panel mb--16" key={order.id}>
+                    <h2 className="h5">Order #{order.id}</h2>
+                    <p>
+                      {order.customer_name || order.name} · {money(order.total_amount)}{' '}
+                      · {order.order_status || ''}
+                    </p>
+                    <p>
+                      {typeof (order.shipping_address || order.address) === 'object'
+                        ? addressText(order.shipping_address || order.address)
+                        : order.shipping_address || order.address || ''}
+                    </p>
+                    {(order.items || []).map((i, n) => (
+                      <p key={i.id || n}>
+                        {typeof i.product === 'object'
+                          ? i.product.name
+                          : i.product || i.product_name}{' '}
+                        × {i.quantity}
+                      </p>
+                    ))}
+                    <form
+                      onSubmit={(e) => {
+                        e.preventDefault();
+                        const status = new FormData(e.currentTarget).get('status');
+                        action(() =>
+                          request(`/seller/orders/update/${order.id}/`, {
+                            method: 'PATCH',
+                            body: { status },
+                          }),
+                        );
+                      }}
+                    >
+                      <select
+                        name="status"
+                        className="rbt-input-field"
+                        defaultValue={order.status}
+                      >
+                        {['pending', 'shipped', 'delivered'].map((s) => (
+                          <option key={s}>{s}</option>
+                        ))}
+                      </select>
+                      <Button small type="submit" disabled={busy}>
+                        Update status
+                      </Button>{' '}
+                      <Button
+                        small
+                        secondary
+                        type="button"
+                        onClick={() =>
+                          download(
+                            `/seller/orders/${order.id}/invoice/`,
+                            `invoice-${order.id}.pdf`,
+                          ).catch((e) => notify(e.message, true))
+                        }
+                      >
+                        Download invoice
+                      </Button>
+                    </form>
+                  </article>
+                ))}
+              {tab === 'inventory' &&
+                rows.map((v) => (
+                  <form
+                    className="next-panel mb--16"
+                    key={v.id}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const stock = Number(new FormData(e.currentTarget).get('stock'));
+                      action(() =>
+                        request(`/seller/inventory/${v.id}/`, {
+                          method: 'PATCH',
+                          body: { stock },
+                        }),
+                      );
+                    }}
+                  >
+                    <h2 className="h6">
+                      {v.product_name || v.name || 'Variant'} {v.size} {v.color}
+                    </h2>
+                    <Field
+                      label="Stock"
+                      name="stock"
+                      type="number"
+                      min="0"
+                      step="1"
+                      defaultValue={v.stock}
+                    />
+                    <Button small type="submit" disabled={busy}>
+                      Save stock
+                    </Button>
+                  </form>
+                ))}
+              {tab === 'payouts' && (
+                <>
+                  <form
+                    className="next-panel"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const amount = Number(
+                        new FormData(e.currentTarget).get('amount'),
+                      );
+                      action(() =>
+                        request('/seller/payout/', {
+                          method: 'POST',
+                          body: { amount },
+                        }),
+                      );
+                    }}
+                  >
+                    <Field
+                      label="Payout amount (INR)"
+                      name="amount"
+                      type="number"
+                      min="0.01"
+                      step="0.01"
+                    />
+                    <p>
+                      Payouts require verified KYC and bank details, and are processed
+                      manually.
+                    </p>
+                    <Button disabled={busy} type="submit">
+                      Request payout
+                    </Button>
+                  </form>
+                  {rows.map((p) => (
+                    <p className="next-panel" key={p.id}>
+                      {money(p.amount)} — {p.status}
+                    </p>
+                  ))}
+                </>
+              )}
+              {['orders', 'inventory', 'payouts'].includes(tab) && (
+                <>
+                  {!rows.length && <p>No records yet.</p>}
+                  <Pager
+                    page={page}
+                    previous={data.previous}
+                    next={data.next}
+                    change={setPage}
+                  />
+                </>
+              )}
+            </>
+          ))}
+        {tab === 'catalog' && (
+          <div className="row">
+            <div className="col-lg-7">
+              <form className="next-panel" onSubmit={submitProduct}>
+                <h2 className="h5">Create product</h2>
+                <Field name="name" label="Product name" />
+                <Field name="description" label="Description">
+                  <textarea
+                    className="rbt-text-field"
+                    name="description"
+                    id="description"
+                    required
+                  />
+                </Field>
+                <Field name="category" label="Category">
+                  <select
+                    className="rbt-input-field"
+                    id="category"
+                    required
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="">Choose category</option>
+                    {flatten(itemsOf(categories.data)).map((c) => (
+                      <option key={c.id} value={c.id}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                </Field>
+                {categories.error && (
+                  <ErrorState error={categories.error} retry={categories.reload} />
+                )}
+                <Field name="size" label="Size" />
+                <Field name="color" label="Colour" />
+                <Field
+                  name="price"
+                  label="Price (INR)"
+                  type="number"
+                  min="0.01"
+                  step="0.01"
+                />
+                <Field name="stock" label="Stock" type="number" min="0" step="1" />
+                <Field
+                  name="images"
+                  label="Variant images"
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  required={false}
+                />
+                <Button disabled={busy || !category} type="submit">
+                  Submit for approval
+                </Button>
+              </form>
+            </div>
+            <div className="col-lg-5">
+              <form
+                className="next-panel"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  action(() =>
+                    request('/seller/catalog/bulk/', {
+                      method: 'POST',
+                      body: new FormData(form),
+                    }),
+                  );
+                }}
+              >
+                <h2 className="h5">Bulk catalog upload</h2>
+                <Button
+                  type="button"
+                  secondary
+                  small
+                  onClick={() =>
+                    download(
+                      '/seller/catalog/bulk/template/',
+                      'catalog-template.xlsx',
+                    ).catch((e) => notify(e.message, true))
+                  }
+                >
+                  Download template
+                </Button>
+                <Field
+                  label="Excel workbook (up to 10 MB)"
+                  name="file"
+                  type="file"
+                  accept=".xlsx"
+                />
+                <Button disabled={busy} type="submit">
+                  Upload workbook
+                </Button>
+              </form>
+            </div>
+          </div>
+        )}
+        {tab === 'verification' && (
+          <div className="row">
+            <div className="col-lg-6">
+              <form
+                className="next-panel"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const form = e.currentTarget;
+                  action(() =>
+                    request('/seller/kyc/', {
+                      method: 'POST',
+                      body: new FormData(form),
+                    }),
+                  );
+                }}
+              >
+                <h2 className="h5">KYC verification</h2>
+                <Field name="pan" label="PAN" />
+                <Field name="aadhaar" label="Aadhaar" />
+                <Field name="document" label="Verification document" type="file" />
+                <Button disabled={busy} type="submit">
+                  Submit KYC
+                </Button>
+              </form>
+            </div>
+            <div className="col-lg-6">
+              <form className="next-panel" onSubmit={submitBank}>
+                <h2 className="h5">Bank details</h2>
+                <Field name="name" label="Account holder name" />
+                <Field name="account" label="Account number" />
+                <Field name="ifsc" label="IFSC" />
+                <Button disabled={busy} type="submit">
+                  Save bank details
+                </Button>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 }
-export default function Seller(){return <AuthGate seller><SellerContent/></AuthGate>;}
+export default function Seller() {
+  return (
+    <AuthGate seller>
+      <SellerContent />
+    </AuthGate>
+  );
+}

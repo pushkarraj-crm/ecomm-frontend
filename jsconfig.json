@@ -8,9 +8,7 @@
     "checkJs": false,
     "noEmit": true,
     "paths": {
-      "@/*": [
-        "./*"
-      ]
+      "@/*": ["./*"]
     }
   },
   "include": [
@@ -20,10 +18,5 @@
     "components/**/*.jsx",
     "lib/**/*.mjs"
   ],
-  "exclude": [
-    "node_modules",
-    ".next",
-    "out",
-    "generated"
-  ]
+  "exclude": ["node_modules", ".next", "out", "generated"]
 }
